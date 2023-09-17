@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="icon" type="image/x-icon" href="/assets/galaxy-icon.svg">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio SPA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <img src="/assets/galaxy-icon.svg">
+        <a class="hdr selected" href="/" onclick="route()">Home</a>
+        <a class="hdr" href="/universe" onclick="route()">O Universo</a>
+        <a class="hdr" href="/explore" onclick="route()">Exploração</a>
+    </nav>
+    <div id="app"></div>
+    <script>
+        const routes = {
+            "/": "/pages/home.html",
+            "/universe": "/pages/universe.html",
+            "/explore": "/pages/explore.html",
+            "/404": "/pages/404.html",
+        }
+        function route(event) {
+            event = event || window.event
+            event.preventDefault();
+
+            window.history.pushState({},"", event.target.href)
+
+            document.querySelector('body').classList.remove("explore", "universe")
+            handle()
+
+            var a = document.getElementsByTagName('a');
+            for (i = 0; i < a.length; i++){
+                a[i].classList.remove('selected');
+            }
+            event.target.classList.add('selected');           
+        }
+        function handle(){
+            const { pathname } = window.location
+            const route = routes[pathname] || routes["/404"]
+
+            fetch(route)
+            .then(data => data.text())
+            .then(html => {
+                document.querySelector('#app').innerHTML = html;
+                document.querySelector('body').classList.add(pathname.replace("/", ""))
+            })
+        }
+        handle()
+        window.onpopstate = () => handle
+    </script>
+</body>
+</html>
